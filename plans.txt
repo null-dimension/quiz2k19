@@ -1,0 +1,35 @@
+User end:
+/index
+	Enter team name -> Store in DB
+
+/quiz
+	Quiz takes place here -> Get from DB, Random sort
+	Display question one by one
+	SPA if possible
+	Provide page reload security
+
+/results
+	Show results
+	
+/live-scoreboard
+	Live score updates for admins
+	
+Admin end:
+/admin
+	/auth
+		Authentication for admin
+	/index
+		Form to change heading and rules in ../index.php
+		List all questions with add, edit, delete options
+	
+	/add-question
+		Question, dynamic options, answer, optional images for options+answer
+	
+	/edit-question?id=q_no
+		Edit the question in specified ID
+	
+	/delete-question?id=q_no
+		Delete the question specified by ID
+	
+	
+	
