@@ -3,9 +3,30 @@ const errors = require("restify-errors");
 const Question = require("../models/Question");
 const config = require("../config");
 
+const SECRET_KEY = "1337";
+
 module.exports = server => {
+  // Admin login
+  server.post('/admin/login', async (req, res, next) => {
+    try {
+      const secret = req.body.secret_key;
+      if(SECRET_KEY === secret) {
+        res.send({success: true, secret_key: SECRET_KEY});
+        next();
+      } else {
+        res.send({success: false});
+        next();
+      }
+    }  catch (err) {
+      return next(new errors.InvalidContentError(err));
+    }
+  });
+
   // Admin home page
-  server.get("/admin", async (req, res, next) => {
+  server.post("/admin/dashboard", async (req, res, next) => {
+    if(!authenticate(req)) {
+      return next(new errors.NotAuthorizedError());
+    }
     try {
       const questions = await Question.find({});
       res.send(questions);
@@ -17,6 +38,10 @@ module.exports = server => {
 
   // Add quewstions
   server.post("/admin/add-question", async (req, res, next) => {
+    if(!authenticate(req)) {
+      return next(new errors.NotAuthorizedError());
+    }
+
     if (!req.is("application/json")) {
       return next(new errors.InvalidContentError("Expects 'application/json"));
     }
@@ -51,6 +76,9 @@ module.exports = server => {
     if (!req.is("application/json")) {
       return next(new errors.InvalidContentError("Expects 'application/json'"));
     }
+    if(!authenticate(req)) {
+      return next(new errors.NotAuthorizedError());
+    }
 
     try {
       let validationErrors = { errors: [] };
@@ -70,6 +98,10 @@ module.exports = server => {
   });
 
   server.del('/admin/delete-question/:id', async (req, res, next) => {
+    if(!authenticate(req)) {
+      return next(new errors.NotAuthorizedError());
+    }
+
     try {
       const question = await Question.findOneAndRemove({_id: req.params.id});
       res.send(204);
@@ -79,6 +111,14 @@ module.exports = server => {
     }
   });
 };
+
+function authenticate(req){
+  if(req.body.secret_key === SECRET_KEY) {
+    return true;
+  } else {
+    return false;
+  }
+}
 
 function convertToLowerCase(question) {
   // Convert everything to lowercase
