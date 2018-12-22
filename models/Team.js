@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const timestamp = require('mongoose-timestamp');
 
-const Team = new mongoose.Schema({
+const TeamSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -15,5 +15,5 @@ const Team = new mongoose.Schema({
 
 TeamSchema.plugin(timestamp);
 
-const Team = mongoose.model('Question', TeamSchema);
+const Team = mongoose.model('Team', TeamSchema);
 module.exports = Team;
