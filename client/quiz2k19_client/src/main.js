@@ -7,7 +7,7 @@ Vue.config.productionTip = false
 
 Vue.use(new VueSocketIO({
   debug: true,
-  connection: 'https://whispering-anchorage-66988.herokuapp.com'//localhost:3000
+  connection: 'http://localhost:3000'//localhost:3000
 }))
 
 const sharedData = {
