@@ -4,14 +4,14 @@ const Team = require("../models/Team");
 const config = require("../config");
 
 module.exports = server => {
-  server.get("/", async (req, res, next) => {
-    try {
-      res.send({ message: "Welcome!" });
-      next();
-    } catch (err) {
-      return next(new errors.InvalidContentError(err));
-    }
-  });
+  // server.get("/", async (req, res, next) => {
+  //   try {
+  //     res.send({ message: "Welcome!" });
+  //     next();
+  //   } catch (err) {
+  //     return next(new errors.InvalidContentError(err));
+  //   }
+  // });
 
   server.post("/quiz", async (req, res, next) => {
     if (!req.is("application/json")) {
@@ -43,6 +43,11 @@ module.exports = server => {
 
         // Randomly sort the questions
         questions.sort(() => 0.5 - Math.random());
+		
+		// Randomly sort the options
+		for(let i=0;i<questions.length;i++){
+			questions[i].options.sort(() => 0.5 - Math.random());
+		}
 
         questions.unshift({ teamId:newTeam._id, teamName: teamName });
         res.send(questions);

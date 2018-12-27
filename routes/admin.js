@@ -36,6 +36,20 @@ module.exports = server => {
     }
   });
 
+  // View question
+  server.post("/admin/view-question/:id", async (req, res, next) => {
+    if(!authenticate(req)) {
+      return next(new errors.NotAuthorizedError());
+    }
+    try {
+      const question = await Question.findOne({_id: req.params.id});
+      res.send(question);
+      next();
+    } catch (err) {
+      return next(new errors.InvalidContentError(err));
+    }
+  });
+
   // Add quewstions
   server.post("/admin/add-question", async (req, res, next) => {
     if(!authenticate(req)) {
@@ -97,7 +111,8 @@ module.exports = server => {
     }
   });
 
-  server.del('/admin/delete-question/:id', async (req, res, next) => {
+  server.post('/admin/delete-question/:id', async (req, res, next) => {
+
     if(!authenticate(req)) {
       return next(new errors.NotAuthorizedError());
     }
@@ -113,8 +128,11 @@ module.exports = server => {
 };
 
 function authenticate(req){
+
   if(req.body.secret_key === SECRET_KEY) {
     return true;
+  } else if(!req.body.secret_key){
+    return false;
   } else {
     return false;
   }
