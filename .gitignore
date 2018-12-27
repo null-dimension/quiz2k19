@@ -2,4 +2,4 @@
 npm-debug.log
 .DS_Store
 /*.env
-/client
+/client/quiz2k19_client/node_modules
