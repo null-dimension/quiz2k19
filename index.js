@@ -34,15 +34,18 @@ db.once('open', () => {
     console.log(`Server started on port ${config.PORT}`);
 	io.on('connection', function(socket){
 		console.log('user connected');
-		Team.find({}).sort({'points': -1}).exec((err, res)=>{
+		Team.find({}, {lean: true}).select({'name': 1, 'points': 1, 'finishTime': 1, '_id': 0}).sort({'points': -1}).exec((err, res)=>{
 			if(err) throw err;
 			io.emit('liveScore', res);
 		});
 		socket.on('updateLiveScore', function(data) {
-			Team.find({}).sort({'points': -1}).exec((err, res)=>{
+			Team.find({}, {lean: true}).select({'name': 1, 'points': 1, 'finishTime': 1, '_id': 0}).sort({'points': -1}).exec((err, res)=>{
 				if(err) throw err;
 				io.emit('liveScore', res);
 			});
+		});
+		socket.on('startAuto', function(data) {
+			socket.broadcast.emit('startAutoBattle', 'auto_on');
 		});
 	
 	});

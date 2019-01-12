@@ -8,6 +8,7 @@
               <div class="title">
                 <div class="h1">{{question.number}}. {{question.title | capitalize}}</div> 
               </div>
+              <pre class="desc" v-if="question.description">{{question.description}}</pre>
               <div class="options" v-for="option in question.options" :key="option.id">
                   <label class="text-justify radio-container" :class="{'radio-disabled': hasAnswered}">
                       <input type="radio" :disabled="hasAnswered" class="optionsInput" :name="question._id" :value="option" v-model="pickedAnswer">
@@ -16,7 +17,7 @@
                   </label>
                   <input type="hidden" :value="question._id">
               </div>
-              <button type="submit" class="btn btn-success" :class="{disabled: hasAnswered}" :disabled="hasAnswered" @click="submitAnswer($event)">Submit</button>
+              <button type="submit" id="submit-btn" class="btn btn-success" :class="{disabled: hasAnswered}" :disabled="hasAnswered" @click="submitAnswer($event)">Submit</button>
           </div>
       </div>
 </template>
@@ -28,16 +29,18 @@ export default {
   props: {
     question: {
       type: Object,
-      default: { title: "", options: [], _id: "", number: 1 }
+      default: { title: "", description: "", options: [], _id: "", number: 1 }
     },
-    teamId: ""
+    teamId: "",
+    finishTime: ""
   },
   data: function() {
     return {
-      pickedAnswer: '',
+      pickedAnswer: "",
       hasAnswered: false,
-      error: '',
-      loading: false
+      error: "",
+      loading: false,
+      auto: null
     };
   },
   mounted: function() {
@@ -46,11 +49,45 @@ export default {
       question => {
         this.hasAnswered = question.hasAnswered;
         this.pickedAnswer = question.selectedAnswer;
-        this.error = '';
+        this.error = "";
         console.log(question.selectedAnswer);
       },
       { immediate: true }
     );
+  },
+  created: function() {
+    // setInterval(()=>{
+
+    // }, 2000);
+
+    if (this.$root.sharedData.autoEnabled) {
+      this.auto = setInterval(() => {
+        let randOption = Math.floor(
+          Math.random() * Math.floor(this.question.options.length)
+        );
+        setTimeout(() => {
+          console.log("random option: " + randOption);
+          console.log("selecting option: " + this.question.options[randOption]);
+          this.pickedAnswer = this.question.options[randOption];
+        }, 500);
+        setTimeout(() => {
+          document.getElementById("submit-btn").click();
+        }, 1000);
+        setTimeout(() => {
+          document.getElementById("btn-next").click();
+        }, 1500);
+        console.log("qno: " + this.question.number);
+        console.log("totalqs: " + this.$root.sharedData.questions.length);
+        // total questions - 1 because it also contains team name
+        if (
+          this.question.number >=
+          this.$root.sharedData.questions.length - 1
+        ) {
+          document.getElementById("finish-btn").click();
+          clearInterval(this.auto);
+        }
+      }, 3000);
+    }
   },
   filters: {
     capitalize: function(value) {
@@ -60,11 +97,11 @@ export default {
   },
   methods: {
     submitAnswer: function(event) {
-      if(!this.pickedAnswer){
-        this.error = 'Answer is required!'
+      if (!this.pickedAnswer) {
+        this.error = "Answer is required!";
         return;
       } else {
-        this.error = '';
+        this.error = "";
       }
       this.question.hasAnswered = true;
       this.question.selectedAnswer = this.pickedAnswer;
@@ -79,11 +116,11 @@ export default {
         .then(res => {
           this.loading = false;
           console.log(res.data);
-          if(res.data.errors) {
-            this.error = 'Answer is required!'
+          if (res.data.errors) {
+            this.error = "Answer is required!";
           } else {
-            this.error = '';
-            this.$socket.emit('updateLiveScore', '');
+            this.error = "";
+            this.$socket.emit("updateLiveScore", "");
           }
         })
         .catch(err => {
@@ -95,7 +132,9 @@ export default {
 };
 </script>
 <style>
-
+.question {
+  width: 100%;
+}
 
 .fade-enter-active,
 .fade-leave-active {
@@ -113,7 +152,8 @@ export default {
 @keyframes slideLeft {
   from {
     transform: translateX(1000px);
-  } to {
+  }
+  to {
     transform: translateX(0);
   }
 }
@@ -140,7 +180,7 @@ export default {
   left: 0;
   height: 25px;
   width: 25px;
-  background-color: #eee;
+  background-color: #ccc;
   border-radius: 50%;
 }
 
@@ -150,7 +190,6 @@ export default {
 
 .radio-disabled:hover input ~ .checkmark {
   background-color: #eee;
-  
 }
 
 .radio-container input:checked ~ .checkmark {
@@ -175,6 +214,5 @@ export default {
   border-radius: 50%;
   background-color: #fff;
 }
-
 </style>
 

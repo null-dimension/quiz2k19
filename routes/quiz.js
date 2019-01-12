@@ -99,6 +99,24 @@ module.exports = server => {
     }
   });
 
+  server.post("/quiz/finish", async (req, res, next) => {
+    if (!req.is("application/json")) {
+      return next(new errors.InvalidContentError("Expects 'application/json"));
+    }
+    try{
+      const teamId = req.body.teamId;
+      const endTime = req.body.finishTime;
+
+      const setFinishTime = await Team.findOneAndUpdate({_id: teamId}, {finishTime: endTime});
+
+      res.send({"success": true});
+      next();
+
+    } catch(err) {
+      return next(new errors.InvalidContentError(err));
+    }
+  });
+
   server.get("/quiz", async (req, res, next) => {
     try {
       //const questions = await Question.find({});

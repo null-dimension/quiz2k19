@@ -1,6 +1,6 @@
 <template>
   <div style="height: 100vh;" class="container d-flex flex-row justify-content-center align-items-center">
-      <h3 id="team-name">TEAM {{teamName}}</h3>
+      <h3 id="team-name">Team {{teamName}}</h3>
       <div class="timer" :class="{'text-danger': minutes <= 1}">
         <span id="hours" v-if="hours">
           <span v-if="hours > 9">{{hours}}</span>
@@ -16,7 +16,7 @@
           <span v-else>0{{seconds}}</span>
         </span>
       </div>
-      <router-link class="btn-finish btn btn-lg btn-primary" :to="{name: 'FinishQuiz'}">Finish</router-link>
+      <button id="finish-btn" class="btn-finish btn btn-lg btn-primary" @click="finishQuiz">Finish</button>
     <div class="question-container">
       
       <!-- <div class="question" v-for="question in questions" :key="question.id">
@@ -50,6 +50,7 @@
 <script>
 import Question from "@/components/Question";
 import { serverBus } from "../main";
+import { HTTP } from "./http-common";
 
 export default {
   name: "Quiz",
@@ -66,36 +67,75 @@ export default {
       minutes: 0,
       seconds: 0,
       timeUp: false,
-      countDownTimer: null
+      countDownTimer: null,
+      endTime: "",
+      startTime: "",
+      loading: false
     };
   },
   components: {
     question: Question
   },
   created: function() {
-      if(this.$root.sharedData.questions.length > 0) {
-        this.questions = this.$root.sharedData.questions;
-        // Has the user answered?
-        for (let i = 0; i < this.questions.length; i++) {
-          this.questions[i].hasAnswered = false;
-          this.questions[i].selectedAnswer = "";
-          this.questions[i].showQuestion = false;
-        }
-        console.log(this.questions);
-        // [0] index is team name and id
-        this.teamName = this.questions[0].teamName;
-        this.teamId = this.questions[0].teamId;
-
-        this.question = this.questions[this.currentQuestion];
-        this.question.number = this.currentQuestion;
-
-        this.startTimer();
-      } else {
-        console.log("ERROR: NO DATA IN SHARED_DATA");
-        this.$router.push({name: 'Home'});
+    if (this.$root.sharedData.questions.length > 0) {
+      this.questions = this.$root.sharedData.questions;
+      // Has the user answered?
+      for (let i = 0; i < this.questions.length; i++) {
+        this.questions[i].hasAnswered = false;
+        this.questions[i].selectedAnswer = "";
+        this.questions[i].showQuestion = false;
       }
+      console.log(this.questions);
+      // [0] index is team name and id
+      this.teamName = this.questions[0].teamName;
+      this.teamId = this.questions[0].teamId;
+
+      this.question = this.questions[this.currentQuestion];
+      this.question.number = this.currentQuestion;
+
+      this.startTimer();
+    } else {
+      console.log("ERROR: NO DATA IN SHARED_DATA");
+      this.$router.push({ name: "Home" });
+    }
   },
   methods: {
+    finishQuiz: function() {
+      this.endTime = new Date();
+
+      let timeDiff = this.endTime - this.startTime;
+
+      let ms = timeDiff % 1000;
+
+      // Remove milliseconds
+      timeDiff /= 1000;
+
+      let hours = Math.floor(timeDiff / 3600);
+      let minutes = Math.floor((timeDiff % 3600) / 60);
+      let seconds = Math.floor((timeDiff % 3600) % 60);
+
+      let timeFormat = `${hours}h : ${minutes}m : ${seconds}s : ${ms}ms`;
+
+      this.loading = true;
+      HTTP.post("/quiz/finish", {
+        teamId: this.teamId,
+        finishTime: timeFormat
+      })
+        .then(res => {
+          this.loading = false;
+          console.log(res.data);
+          if (res.data.errors) {
+            console.log(res.data.errors);
+          } else {
+            this.$socket.emit("updateLiveScore", "");
+          }
+        })
+        .catch(err => {
+          this.loading = false;
+          console.log(err);
+        });
+      this.$router.push({name: 'FinishQuiz'});
+    },
     prevQuestion: function() {
       if (this.currentQuestion <= 1) {
         this.currentQuestion = 1;
@@ -177,38 +217,39 @@ export default {
         this.slideRight = false;
       }, 350);
     },
-    startTimer: function(){
+    startTimer: function() {
       // Max time in milliseconds
-      let maxTime = 300000;
+      let maxTime = 3000000;
       let countDownTo = new Date().getTime() + maxTime;
-
-      this.countDownTimer = setInterval(()=>{
-
+      this.startTime = new Date();
+      this.countDownTimer = setInterval(() => {
         let now = new Date().getTime();
 
         let timeDiff = countDownTo - now;
 
-        let hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        let hours = Math.floor(
+          (timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        );
         let minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-        let seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);;
-        if(hours < 0){
+        let seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+        if (hours < 0) {
           hours = 0;
-        } 
-        if(minutes < 0){
+        }
+        if (minutes < 0) {
           minutes = 0;
         }
-        if(seconds < 0) {
+        if (seconds < 0) {
           seconds = 0;
         }
         this.hours = hours;
         this.minutes = minutes;
         this.seconds = seconds;
         // Time up//
-        if(timeDiff <= 0) {
+        if (timeDiff <= 0) {
           this.timeUp = true;
           clearInterval(this.countDownTimer);
-          this.$router.push({name: 'FinishQuiz'});
-          
+          this.finishQuiz();
+          this.$router.push({ name: "FinishQuiz" });
         }
       }, 1000);
     }
@@ -216,9 +257,10 @@ export default {
   watch: {
     currentQuestion: function(newValue) {
       console.log(newValue);
+      
     }
   },
-  beforeRouteLeave (to, from, next) {
+  beforeRouteLeave(to, from, next) {
     //console.log(to, from);
     // clearInterval(this.countDownTimer);
     // if(to.name === 'FinishQuiz') {
@@ -231,13 +273,11 @@ export default {
     next();
   },
   beforeRouteEnter(to, from, next) {
-    if(from.name === 'Home') {
+    if (from.name === "Home") {
       next();
     } else {
-
-      next('/');
+      next("/");
     }
-    
   }
 };
 </script>
@@ -251,14 +291,24 @@ body {
   -ms-user-select: none;
   user-select: none;
 }
+.pagination-container,
+.btn-nav {
+  opacity: 0.8;
+}
+.pagination-container:hover {
+  opacity: 1;
+}
 
+.btn-nav:hover {
+  opacity: 1;
+}
 .timer {
   position: fixed;
   bottom: 10px;
   left: 10px;
   font-size: 1.5rem;
   box-shadow: 0 0 5px 1px #333;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   color: #fff;
   border-radius: 10px;
   padding: 10px;
@@ -299,15 +349,14 @@ body {
   }
 }
 .question-container {
-
   width: 100%;
 }
 .pagination-container {
-  position: absolute;
+  position: fixed;
   bottom: 0;
 }
 #team-name {
-  position: absolute;
+  position: fixed;
   top: 0px;
   padding: 20px;
   color: #fff;
@@ -317,7 +366,7 @@ body {
   background: rgba(0, 0, 0, 0.5);
 }
 .btn-finish {
-  position: absolute;
+  position: fixed;
   top: 55px;
 }
 .btn-nav {
@@ -327,7 +376,7 @@ body {
   margin: 5px;
   width: 100px;
 }
-#btn-next { 
+#btn-next {
   left: 50%;
 }
 #btn-prev {

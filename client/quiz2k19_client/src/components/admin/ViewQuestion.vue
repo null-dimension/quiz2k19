@@ -10,7 +10,8 @@
         <div class="viewed-question container jumbotron" style="height: 100vh;">
             <div class="view-question alert alert-light">
                 <div class="h2"><span>Question:&nbsp;</span>{{question.title | capitalize}}</div>
-                    <h3>Options:</h3>
+                <div class="desc" v-if="question.description"><pre>{{question.description}}</pre></div>
+                <h3>Options:</h3>
                 <ul>
                     <li class="h4" v-for="option in question.options" :key="option.id">{{option}}</li>
                 </ul>

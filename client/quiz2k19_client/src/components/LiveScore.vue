@@ -7,6 +7,7 @@
                     <th scope="col">Rank #</th>
                     <th scope="col">Team Name</th>
                     <th scope="col">Points</th>
+                    <th scope="col">Time Elapsed</th>
                 </tr>
             </thead>
             <tbody v-if="teams.length > 0">
@@ -14,6 +15,7 @@
                     <th scope="row">{{index + 1}}</th>
                     <td>{{team.name}}</td>
                     <td>{{team.points}}</td>
+                    <td>{{team.finishTime}}</td>
                 </tr>
             </tbody>
         </table>

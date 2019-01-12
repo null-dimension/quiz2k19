@@ -60,10 +60,11 @@ module.exports = server => {
       return next(new errors.InvalidContentError("Expects 'application/json"));
     }
 
-    const { title, options, answer } = req.body;
+    const { title, description, options, answer } = req.body;
 
     let question = new Question({
       title,
+      description,
       options,
       answer
     });

@@ -25,4 +25,7 @@ export default {
 body {
   background: linear-gradient(#83a4d4, #b6fbff);
 }
+pre {
+  font-size: 1.2em;
+}
 </style>

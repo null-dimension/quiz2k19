@@ -8,6 +8,9 @@ const QuestionSchema = new mongoose.Schema({
         trim: true,
         lowercase: true
     },
+    description: {
+        type: String
+    },
     options:{
         type: [String],
         required: true,

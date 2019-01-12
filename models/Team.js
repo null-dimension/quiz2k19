@@ -10,6 +10,9 @@ const TeamSchema = new mongoose.Schema({
     points: {
         type: Number,
         default: 0
+    },
+    finishTime: {
+        type: String
     }
 });
 

@@ -21,6 +21,14 @@
                     <input type="text" class="form-control" v-model="question.title" placeholder="Enter the question" id="title">
                 </div>
             </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <label for="title" class="input-group-text">Description (Optional)</label>
+                    </div>
+                    <textarea class="form-control" v-model="question.description" placeholder="Enter description (optional)" id="description"></textarea>
+                </div>
+            </div>
             <div class="form-inline">
             <div class="form-group">
                 <div class="input-group">
@@ -64,6 +72,7 @@ export default {
         return {
             question: {
                 title: '',
+                description: '',
                 options: [],
                 answer: ''
             },

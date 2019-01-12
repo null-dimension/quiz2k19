@@ -11,7 +11,8 @@ Vue.use(new VueSocketIO({
 }))
 
 const sharedData = {
-  questions: []
+  questions: [],
+  autoEnabled: false
 }
 
 new Vue({

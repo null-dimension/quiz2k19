@@ -6,6 +6,7 @@
         </div>
         <div class="questions-container container jumbotron" style="height: 100%;">
           <router-link class="btn btn-secondary" :to="{name: 'Home'}">Play Quiz</router-link>
+          <button class="btn btn-warning" @click="startAutoTesting">Auto Battle</button>
           <h3>Questions</h3>
           <router-link class="btn btn-success" :to="{name: 'AddQuestion'}">Add Question</router-link>
           <div class="alert alert-dark" v-if="error">
@@ -84,6 +85,10 @@ export default {
           this.loading = false;
           console.log(err);
         });
+    },
+    startAutoTesting: function(){
+      console.log('Starting auto battle...');
+      this.$socket.emit('startAuto', 'auto_on');
     }
   }
 };
