@@ -51,7 +51,7 @@ db.once('open', () => {
 	});
 });
 
-// server.get('/*', restify.plugins.serveStatic({
-// 	directory: './quiz2k19',
-// 	default: 'index.html'
-// }));
+server.get('/*', restify.plugins.serveStatic({
+	directory: './client/quiz2k19_client/dist',
+	default: 'index.html'
+}));
