@@ -2,7 +2,7 @@
     <div style="height: 100vh;" class="main container d-flex flex-row justify-content-center align-items-center">
         <div class="loading-indicator" v-if="loading"></div>
         <div class="text-center jumbotron">
-            <h1>TECHNO TARANG 2K19</h1>
+            <h1>VUE QUIZ APP</h1>
             <hr>
             <h2>QUIZ</h2>
             <form class="form">
