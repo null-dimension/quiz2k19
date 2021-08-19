@@ -23,13 +23,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - name: Build vue app
-        run: |
-          cd ./client/quiz2k19_client
-          yarn install
-          yarn run build
-
-
       - uses: AkhileshNS/heroku-deploy@v3.12.12
         
         with:
