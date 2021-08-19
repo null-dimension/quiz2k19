@@ -7,7 +7,7 @@ Vue.config.productionTip = false
 
 Vue.use(new VueSocketIO({
   debug: true,
-  connection: 'https://lan-quiz.herokuapp.com'//localhost:3000
+  connection: process.env.VUE_APP_BASE_URL || 'http://localhost:3000'//localhost:3000
 }))
 
 const sharedData = {
