@@ -12,8 +12,7 @@
     "socket.io-client": "^2.2.0",
     "vue": "^2.5.17",
     "vue-router": "^3.0.2",
-    "vue-socket.io": "^3.0.4",
-    "@vue/cli-service": "^3.2.0"
+    "vue-socket.io": "^3.0.4"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.2.0",
