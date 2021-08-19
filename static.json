@@ -1,5 +1,5 @@
 {
-    "root": "dist",
+    "root": "client/quiz2k19_client/dist",
     "clean_urls": true,
     "routes": {
       "/**": "index.html"
