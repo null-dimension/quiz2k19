@@ -29,4 +29,3 @@ jobs:
           heroku_app_name: "lan-quiz" #Must be unique in Heroku
           heroku_email: ${{secrets.HEROKU_EMAIL}}
           appdir: "quiz2k19" # <- This will point to the api folder in your project
-          procfile: "web:node quiz2k19/index.js"
