@@ -24,11 +24,12 @@
             </form>
             <hr>
             <div class="rules">
-                <h3>RULES</h3>
+                <h3>About</h3>
                 <ul class="list-group">
-                    <li class="list-group-item">RULE 1</li>
-                    <li class="list-group-item">RULE 1</li>
-                    <li class="list-group-item">RULE 1</li>
+                  <li class="list-group-item">This web appcan be used to conduct quiz event for multiple users in a local area network. It was initially made for quiz and coding event of IT fest TechnoTarang 2k19.</li>
+                  <li class="list-group-item">See admin dashboard in <a href="https://lan-quiz.herokuapp.com/#/dashboard">Dashboard</a>(pass: 1337)</li>
+                  <li class="list-group-item">See live score in <a href="https://lan-quiz.herokuapp.com/#/live-score">Scoreboard</a></li>
+                  <li class="list-group-item">Auto battle(available in admin ): Open multiple browser tabs/windows and press auto battle for automated bot quiz battle</li>
                 </ul>
             </div>
         </div>

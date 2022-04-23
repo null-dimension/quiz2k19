@@ -46,7 +46,7 @@
                 </div>
             </div>
             </div>
-            <button class="add-options btn btn-info" v-on:click="addOption">Add another option</button>
+            <button type="button" class="add-options btn btn-info" v-on:click="addOption">Add another option</button>
             <br>
             <div class="form-group my-2">
                 <div class="input-group">
